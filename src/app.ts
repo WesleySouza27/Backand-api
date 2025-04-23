@@ -11,7 +11,7 @@ const app: Application = express();
 
 // Middlewares globais
 app.use(express.json());
-app.use(cors({ origin: 'https://seu-projeto.vercel.app' }));
+app.use(cors({ origin: 'https://grow-tweeter-full-stack.vercel.app/' }));
 
 // Rotas da aplicação
 app.use('/usuarios', userRoutes);
