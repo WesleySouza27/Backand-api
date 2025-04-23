@@ -1,0 +1,32 @@
+{
+  "name": "atividadefinalmodulodbii",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx prisma generate && npx tsc",
+    "dev": "npx ts-node-dev --respawn --transpile-only ./src/index.ts",
+    "start": "node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "GrowTwitter é uma API desenvolvida para simular uma rede social no estilo Twitter. O projeto utiliza **Node.js**, **Express**, **Prisma ORM** e **PostgreSQL** para gerenciar o banco de dados. Ele implementa funcionalidades como cadastro de usuários, criação de tweets, replies, likes e autenticação de usuários.",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.14.1",
+    "prisma": "^6.6.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.6.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
