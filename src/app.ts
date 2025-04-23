@@ -18,6 +18,13 @@ app.use('/usuarios', userRoutes);
 app.use('/tweets', tweetRoutes);
 app.use('/likes', likeRoutes);
 app.use('/follows', followRoutes);
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    sucesso: true,
+    mensagem: 'API funcionando corretamente!',
+    dados: null,
+  });
+});
 app.use(errorHandler); // Use o middleware de tratamento de erros
 
 // Middleware de exemplo para lidar com rotas não encontradas (opcional)
