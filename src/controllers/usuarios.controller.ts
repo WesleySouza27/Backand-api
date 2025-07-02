@@ -22,7 +22,7 @@ if (!secret) {
 }
 // Função para gerar o token JWT
 function generateToken(usuario: Usuario): string {
-  return jwt.sign({ email: usuario.email }, secret, { expiresIn: '3h' });
+  return jwt.sign({ id: usuario.id, email: usuario.email }, secret, { expiresIn: '3h' });
 }
 
 // Controller para criar um novo usuário
@@ -48,10 +48,19 @@ export async function getUserByIdController(req: Request, res: Response, next: N
     const usuarioId = req.params.id;
     const usuario = await getUserById(usuarioId);
     if (!usuario) {
-      ApiResponse.error(res, 'Utilizador não encontrado', null, 404);
+      ApiResponse.error(res, 'Usuário não encontrado', null, 404);
       return;
     }
-    ApiResponse.success(res, 'Utilizador encontrado', usuario);
+
+    // Filtra apenas os campos desejados
+    const usuarioFiltrado = {
+      id: usuario.id,
+      nome: usuario.nome, 
+      email: usuario.email,
+      avatar: usuario.avatar,
+    };
+
+    ApiResponse.success(res, 'Usuário encontrado com sucesso', usuarioFiltrado);
   } catch (error: unknown) {
     next(error);
   }
@@ -75,7 +84,7 @@ export async function deleteUserController(req: Request, res: Response, next: Ne
   try {
     const usuarioId = req.params.id;
     await deleteUser(usuarioId);
-    ApiResponse.success(res, 'Utilizador eliminado com sucesso');
+    ApiResponse.success(res, 'Usuario deletado com sucesso');
   } catch (error: unknown) {
     next(error);
   }

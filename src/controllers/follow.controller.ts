@@ -9,20 +9,46 @@ import {
 } from '../services/follow.service';
 import { ApiResponse } from '../utils/api-response';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
+
+const criarSeguidorSchema = z.object({
+  followingId: z.string().uuid({ message: 'ID do seguido inválido' }),
+});
 
 // Controller para criar um novo seguidor (follow)
 async function criarSeguidorController(req: Request, res: Response, next: NextFunction) {
+
+  const followerId = req.usuario?.id;
+
+  
   try {
     // Verifica se os IDs do seguidor e seguido foram fornecidos
-    if (!req.body.followerId || !req.body.followingId) {
+
+    const parseResult = criarSeguidorSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      ApiResponse.error(res, 'Dados inválidos', parseResult.error.errors, 400);
+      return;
+    }
+
+    if (!followerId) {
+      ApiResponse.error(res, 'ID do seguidor é obrigatório', null, 400);
+      return;
+    }
+
+    if (!followerId || !req.body.followingId) {
       ApiResponse.error(res, 'IDs do seguidor e seguido são obrigatórios', null, 400);
+      return;
+    }
+
+    if (followerId === req.body.followingId) {
+      ApiResponse.error(res, 'Você não pode seguir a si mesmo', null, 400);
       return;
     }
 
     const dados: Prisma.FollowerCreateInput = {
       follower: {
         connect: {
-          id: req.body.followerId,
+          id: followerId,
         },
       },
       following: {
@@ -33,7 +59,7 @@ async function criarSeguidorController(req: Request, res: Response, next: NextFu
     };
 
     // Verifica se o usuário já segue o outro
-    const jaSegue = await verificarSeSegue(req.body.followerId, req.body.followingId);
+    const jaSegue = await verificarSeSegue(followerId, req.body.followingId);
     if (jaSegue) {
       ApiResponse.error(res, 'Você já segue este usuário', null, 400);
       return;
@@ -44,6 +70,22 @@ async function criarSeguidorController(req: Request, res: Response, next: NextFu
     next(erro);
   }
 }
+
+// Controller para verificar se um usuário segue outro
+async function verificarSeSegueController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { followerId, followingId } = req.params;
+    const segue = await verificarSeSegue(followerId, followingId);
+    if (segue) {
+      ApiResponse.success(res, 'Verificação realizada', { segue: true, id: segue.id });
+    } else {
+      ApiResponse.success(res, 'Verificação realizada', { segue: false, id: null });
+    }
+  } catch (erro: any) {
+    next(erro);
+  }
+}
+
 
 // Controller para obter um seguidor pelo ID
 async function obterSeguidorPorIdController(req: Request, res: Response, next: NextFunction) {
@@ -62,7 +104,6 @@ async function obterSeguidorPorIdController(req: Request, res: Response, next: N
 
 // Controller para deletar um seguidor (unfollow)
 async function deletarSeguidorController(req: Request, res: Response, next: NextFunction) {
-  console.log("ID do seguidor a deletar:", req.params.id); // Adicione esta linha
   try {
         const id = req.params.id;
         await deletarSeguidor(id);
@@ -98,4 +139,4 @@ async function obterSeguindoDoUsuarioController(req: Request, res: Response, nex
   }
 }
 
-export { criarSeguidorController, obterSeguidorPorIdController, deletarSeguidorController, obterSeguidoresDoUsuarioController, obterSeguindoDoUsuarioController };
+export { criarSeguidorController, obterSeguidorPorIdController, deletarSeguidorController, obterSeguidoresDoUsuarioController, obterSeguindoDoUsuarioController, verificarSeSegueController };

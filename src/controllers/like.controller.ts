@@ -10,7 +10,8 @@ import { ApiResponse } from '../utils/api-response';
 // Controller para criar um novo like
 async function criarLikeController(req: Request, res: Response, next: NextFunction) {
   try {
-    const { usuarioId, tweetId } = req.body;
+    const usuarioId = req.usuario?.id;
+    const { tweetId } = req.body;
 
     if (!usuarioId || !tweetId) {
       ApiResponse.error(res, 'Usuário e tweet são obrigatórios', null, 400);

@@ -9,6 +9,7 @@ import {
   obterTodosTweets
 } from '../services/tweet.service';
 import { ApiResponse } from '../utils/api-response';
+import { obterFeedDoUsuario } from '../services/tweet.service';
 
 
 
@@ -96,5 +97,20 @@ async function obterTodosTweetsController(req: Request, res: Response, next: Nex
   }
 }
 
+// Controller para obter o feed do usuário autenticado
+async function obterFeedController(req: Request, res: Response, next: NextFunction) {
+  try {
+    const usuarioId = req.usuario?.id;
+    if (!usuarioId) {
+      ApiResponse.error(res, 'Usuário não autenticado', null, 401);
+      return;
+    }
+    const feed = await obterFeedDoUsuario(usuarioId);
+    ApiResponse.success(res, 'Feed encontrado', feed);
+  } catch (erro) {
+    next(erro);
+  }
+}
 
-export { criarTweetController, obterTweetPorIdController, atualizarTweetController, deletarTweetController, obterTodosTweetsController };
+
+export { criarTweetController, obterTweetPorIdController, atualizarTweetController, deletarTweetController, obterTodosTweetsController, obterFeedController };

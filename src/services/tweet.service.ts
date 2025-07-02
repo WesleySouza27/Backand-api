@@ -1,6 +1,6 @@
 import { PrismaClient, Tweet, TipoTweet } from '@prisma/client';
-const prisma = new PrismaClient();
 import { Prisma } from '@prisma/client';
+import { prismaClient } from '../database/prisma.client';
 
 interface TweetCreateInput {
   descricao: string;
@@ -12,7 +12,7 @@ interface TweetCreateInput {
 
 // Função para criar um tweet
 async function criarTweet(dados: TweetCreateInput): Promise<Tweet> {
-  return prisma.tweet.create({ data: dados });
+  return prismaClient.tweet.create({ data: dados });
 }
 
 
@@ -22,7 +22,7 @@ async function criarReply(
   usuarioId: string,
   parentId: string
 ): Promise<Tweet> {
-  const novoReply = await prisma.tweet.create({
+  const novoReply = await prismaClient.tweet.create({
     data: {
       descricao,
       tipo: 'reply', // Define o tipo como "reply"
@@ -35,7 +35,7 @@ async function criarReply(
 
 // Função para obter um tweet pelo ID
 async function obterTweetPorId(id: string): Promise<Tweet | null> {
-  const tweet = await prisma.tweet.findUnique({ // Use "prisma" aqui
+  const tweet = await prismaClient.tweet.findUnique({ // Use "prisma" aqui
     where: { id },
     include: {
       usuario: true, // Inclui os dados do usuário que criou o tweet
@@ -49,7 +49,7 @@ async function obterTweetPorId(id: string): Promise<Tweet | null> {
 
 // Função para atualizar um tweet
 async function atualizarTweet(id: string, dados: Prisma.TweetUpdateInput): Promise<Tweet> {
-  const tweetAtualizado = await prisma.tweet.update({ // Use "prisma" aqui
+  const tweetAtualizado = await prismaClient.tweet.update({ // Use "prisma" aqui
     where: { id },
     data: dados,
   });
@@ -58,14 +58,14 @@ async function atualizarTweet(id: string, dados: Prisma.TweetUpdateInput): Promi
 
 // Função para deletar um tweet
 async function deletarTweet(id: string): Promise<void> {
-  await prisma.tweet.delete({ // Use "prisma" aqui
+  await prismaClient.tweet.delete({ // Use "prisma" aqui
     where: { id },
   });
 }
 
 // Função para obter todos os tweets
 async function obterTodosTweets(): Promise<Tweet[]> {
-  const tweets = await prisma.tweet.findMany({ // Use "prisma" aqui
+  const tweets = await prismaClient.tweet.findMany({ // Use "prisma" aqui
     include: {
       usuario: true,
       likes: true,
@@ -75,4 +75,30 @@ async function obterTodosTweets(): Promise<Tweet[]> {
   return tweets;
 }
 
-export { criarTweet, obterTweetPorId, atualizarTweet, deletarTweet, obterTodosTweets, criarReply  };
+// Função para buscar o feed do usuário autenticado
+async function obterFeedDoUsuario(usuarioId: string) {
+  // Busca os IDs dos usuários que o usuário autenticado segue
+  const seguindo = await prismaClient.follower.findMany({
+    where: { followerId: usuarioId },
+    select: { followingId: true }
+  });
+
+  // Monta a lista de IDs: o próprio usuário + quem ele segue
+  const ids = [usuarioId, ...seguindo.map(f => f.followingId)];
+
+  // Busca os tweets desses usuários, ordenados do mais novo para o mais antigo
+  const tweets = await prismaClient.tweet.findMany({
+    where: { usuarioId: { in: ids } },
+    include: {
+      usuario: true,
+      likes: true,
+      replies: true,
+      parent: true
+    },
+    orderBy: { criadoEm: 'desc' }
+  });
+
+  return tweets;
+}
+
+export { criarTweet, obterTweetPorId, atualizarTweet, deletarTweet, obterTodosTweets, criarReply, obterFeedDoUsuario  };

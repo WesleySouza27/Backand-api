@@ -1,12 +1,12 @@
 import { PrismaClient, Like } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prismaClient } from '../database/prisma.client';
 
 // Função para criar um novo like
 async function criarLike(dados: { usuarioId: string; tweetId: string }): Promise<Like> {
   const { usuarioId, tweetId } = dados;
 
   // Verifica se o like já existe
-  const likeExistente = await prisma.like.findUnique({
+  const likeExistente = await prismaClient.like.findUnique({
     where: {
       usuarioId_tweetId: {
         usuarioId,
@@ -20,7 +20,7 @@ async function criarLike(dados: { usuarioId: string; tweetId: string }): Promise
   }
 
   // Cria o like
-  const novoLike = await prisma.like.create({
+  const novoLike = await prismaClient.like.create({
     data: {
       usuario: { connect: { id: usuarioId } },
       tweet: { connect: { id: tweetId } },
@@ -32,17 +32,17 @@ async function criarLike(dados: { usuarioId: string; tweetId: string }): Promise
 
 // Função para obter um like pelo ID
 async function obterLikePorId(id: string): Promise<Like | null> {
-  return prisma.like.findUnique({ where: { id } });
+  return prismaClient.like.findUnique({ where: { id } });
 }
 
 // Função para deletar um like
 async function deletarLike(id: string): Promise<void> {
-  await prisma.like.delete({ where: { id } });
+  await prismaClient.like.delete({ where: { id } });
 }
 
 // Função para verificar se um usuário já deu like em um tweet
 async function verificarLikeUnico(usuarioId: string, tweetId: string): Promise<Like | null> {
-  return prisma.like.findUnique({
+  return prismaClient.like.findUnique({
     where: {
       usuarioId_tweetId: {
         usuarioId,

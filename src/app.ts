@@ -1,3 +1,4 @@
+import { setupSwagger } from "./swagger";
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { userRoutes } from './routes/usuarios.routes';
@@ -13,6 +14,8 @@ const app: Application = express();
 app.use(express.json());
 app.use(cors());
 
+setupSwagger(app as any);
+
 // Rotas da aplicação
 app.use('/usuarios', userRoutes);
 app.use('/tweets', tweetRoutes);
@@ -25,9 +28,9 @@ app.get('/', (req: Request, res: Response) => {
     dados: null,
   });
 });
-app.use(errorHandler); // Use o middleware de tratamento de erros
+app.use(errorHandler); 
 
-// Middleware de exemplo para lidar com rotas não encontradas (opcional)
+// Rota para tratamento de erros 404
 app.use((req: Request, res: Response) => {
   ApiResponse.error(res, 'Rota não encontrada', null, 404);
 });

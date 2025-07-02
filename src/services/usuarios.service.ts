@@ -1,7 +1,7 @@
 import { PrismaClient, Usuario } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
-const prismaClient = new PrismaClient();
+import { prismaClient } from '../database/prisma.client';
 
 // Função para criar um novo usuário
 async function createUser(data: Omit<Usuario, 'id' | 'criadoEm' | 'atualizadoEm'>): Promise<Usuario> {
