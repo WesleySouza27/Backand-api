@@ -6,6 +6,7 @@ import { tweetRoutes } from './routes/tweets.routes';
 import { likeRoutes } from './routes/likes.routes';
 import { followRoutes } from './routes/follow.routes';
 import { errorHandler } from './middlewares/error-handler';
+import { ErrorRequestHandler } from 'express';
 import { ApiResponse } from './utils/api-response';
 
 const app: Application = express();
@@ -35,6 +36,6 @@ app.use((req: Request, res: Response) => {
   ApiResponse.error(res, 'Rota não encontrada', null, 404);
 });
 
-app.use(errorHandler);
+app.use(errorHandler as any);
 
 export { app };
