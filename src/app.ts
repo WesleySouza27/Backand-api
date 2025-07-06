@@ -28,11 +28,13 @@ app.get('/', (req: Request, res: Response) => {
     dados: null,
   });
 });
-app.use(errorHandler); 
+ 
 
 // Rota para tratamento de erros 404
 app.use((req: Request, res: Response) => {
   ApiResponse.error(res, 'Rota não encontrada', null, 404);
 });
+
+app.use(errorHandler);
 
 export { app };
