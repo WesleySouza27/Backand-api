@@ -36,6 +36,6 @@ app.use((req: Request, res: Response) => {
   ApiResponse.error(res, 'Rota não encontrada', null, 404);
 });
 
-app.use(errorHandler as any);
+app.use(errorHandler as ErrorRequestHandler);
 
 export { app };
