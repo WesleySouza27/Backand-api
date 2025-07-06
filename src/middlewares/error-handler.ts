@@ -33,7 +33,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
   }
 
   // Formata a resposta de erro usando a classe ApiResponse
-  return res.status(codigo).json({
+  res.status(codigo).json({
     sucesso: false,
     mensagem,
     dados: null,
