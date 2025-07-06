@@ -27,7 +27,7 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
       codigo = 401;
     } else if (mensagem === 'Usuário não encontrado') {
       codigo = 404;
-    } else if (mensagem === 'Email já cadastrado') {
+    } else if (mensagem === 'Email já cadastrado.') {
       codigo = 409;
     }
   }
