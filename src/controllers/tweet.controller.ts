@@ -52,6 +52,7 @@ async function criarTweetController(req: Request, res: Response, next: NextFunct
 
 // Controller para obter um tweet pelo ID
 async function obterTweetPorIdController(req: Request, res: Response, next: NextFunction) {
+  console.log('Obter tweet por ID chamado com id:', req.params.id);
   try {
     const id = req.params.id;
     const tweet = await obterTweetPorId(id);
@@ -99,6 +100,7 @@ async function obterTodosTweetsController(req: Request, res: Response, next: Nex
 
 // Controller para obter o feed do usuário autenticado
 async function obterFeedController(req: Request, res: Response, next: NextFunction) {
+  console.log('Feed controller chamado!');
   try {
     const usuarioId = req.usuario?.id;
     if (!usuarioId) {
