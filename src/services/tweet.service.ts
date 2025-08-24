@@ -76,29 +76,17 @@ async function obterTodosTweets(): Promise<Tweet[]> {
 }
 
 // Função para buscar o feed do usuário autenticado
-async function obterFeedDoUsuario(usuarioId: string) {
-  // Busca os IDs dos usuários que o usuário autenticado segue
+async function obterFeedDoUsuario(usuarioId: string): Promise<Tweet[]> {
   const seguindo = await prismaClient.follower.findMany({
     where: { followerId: usuarioId },
-    select: { followingId: true }
+    select: { followingId: true },
   });
-
-  // Monta a lista de IDs: o próprio usuário + quem ele segue
-  const ids = [usuarioId, ...seguindo.map(f => f.followingId)];
-
-  // Busca os tweets desses usuários, ordenados do mais novo para o mais antigo
-  const tweets = await prismaClient.tweet.findMany({
+  const ids = [usuarioId, ...seguindo.map((s) => s.followingId)];
+  return prismaClient.tweet.findMany({
     where: { usuarioId: { in: ids } },
-    include: {
-      usuario: true,
-      likes: true,
-      replies: true,
-      parent: true
-    },
-    orderBy: { criadoEm: 'desc' }
+    orderBy: { criadoEm: 'desc' },
+    include: { usuario: true, replies: true },
   });
-
-  return tweets;
 }
 
 export { criarTweet, obterTweetPorId, atualizarTweet, deletarTweet, obterTodosTweets, criarReply, obterFeedDoUsuario  };
