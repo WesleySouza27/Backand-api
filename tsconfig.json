@@ -2,12 +2,13 @@
   "compilerOptions": {
     "typeRoots": ["./node_modules/@types", "./@types"],
     "target": "es2016",                                 
-    "module": "commonjs", 
-    "moduleResolution": "node",                              
+    "module": "Node16", 
+    "moduleResolution": "node16",                              
     "esModuleInterop": true,                             
     "forceConsistentCasingInFileNames": true,            
     "strict": true,                                      
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     // "rootDir": "./src",
     "rootDirs": ["./src", "./tests"],
     "outDir": "./dist"                                
