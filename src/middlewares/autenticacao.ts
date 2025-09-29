@@ -15,14 +15,17 @@ export const autenticar = async (req: Request, res: Response, next: NextFunction
 
     try {
         const decoded = jwt.decoder<{ email: string }>(token); // Decodifica o token usando a classe JWT
+        if (!decoded?.email) {
+            ApiResponse.error(res, 'Token de autenticação inválido', null, 401);
+            return;
+        }
         const usuario = await findUserByEmail(decoded.email);
-
         if (!usuario) {
             ApiResponse.error(res, 'Usuário não encontrado', null, 404);
             return;
         }
 
-        req.usuario = usuario; // Adiciona o usuário à requisição
+        (req as any).usuario = { id: usuario.id, email: usuario.email };
         next();
     } catch (erro) {
         ApiResponse.error(res, 'Token de autenticação inválido', null, 401);

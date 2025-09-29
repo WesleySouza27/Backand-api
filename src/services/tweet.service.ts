@@ -89,4 +89,4 @@ async function obterFeedDoUsuario(usuarioId: string): Promise<Tweet[]> {
   });
 }
 
-export { criarTweet, obterTweetPorId, atualizarTweet, deletarTweet, obterTodosTweets, criarReply, obterFeedDoUsuario  };
+export { obterFeedDoUsuario, criarTweet, obterTweetPorId, atualizarTweet, deletarTweet, obterTodosTweets, criarReply  };

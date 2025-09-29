@@ -23,7 +23,7 @@ async function obterFeedController(req: Request, res: Response, next: NextFuncti
       return;
     }
     const feed = await obterFeedDoUsuario(usuarioId);
-    ApiResponse.success(res, 'Feed encontrado', feed);
+    return ApiResponse.success(res, 'Feed encontrado', feed);
   } catch (erro) {
     next(erro);
   }
@@ -70,7 +70,13 @@ async function criarTweetController(req: Request, res: Response, next: NextFunct
 // Controller para obter um tweet pelo ID
 async function obterTweetPorIdController(req: Request, res: Response, next: NextFunction) {
   try {
+    console.log('[TRACE] obterTweetPorIdController params.id =', req.params.id);
     const id = req.params.id;
+     const { validate } = await import('uuid');
+    if (!validate(id)) {
+      ApiResponse.error(res, 'ID inválido', null, 400);
+      return;
+    }
     const tweet = await obterTweetPorId(id);
     if (!tweet) {
       ApiResponse.error(res, 'Tweet não encontrado', null, 404);
